@@ -1,0 +1,16 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+.js {
+  font-weight: 800;
+  background: linear-gradient(90deg, #3b82f6, #996dff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -0.5px;
+}
