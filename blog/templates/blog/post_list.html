@@ -1,0 +1,52 @@
+{% extends "blog/base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<div class="text-center">
+  <h1 class="js">Welcome to {{ title }}</h1><br>
+  <p>Very nice to meet you!</p>
+</div>
+
+<div class="row">
+  {% for post in page_obj %}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100">
+        {% if post.image %}
+          <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}" loading="lazy">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ post.title }}</h5>
+          <p class="card-text">{{ post.content|truncatewords:20 }}</p>
+          <a href="{% url 'post_detail' post.slug %}" class="btn btn-primary">Read more</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p>No posts yet.</p>
+  {% endfor %}
+</div>
+
+<nav class="d-flex justify-content-center">
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+    {% endif %}
+    <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+    {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>
+
+<div class="categories-section text-center">
+  <h5>Browse by Category</h5>
+  <div class="category-pills">
+    {% for category in categories %}
+      <a href="{% url 'category_posts' category.name %}" class="category-pill">
+        {{ category.name }} <span class="category-count">{{ category.posts.count }}</span>
+      </a>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
