@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="text-center">
-  <h1 class="js">Welcome to {{ title }}</h1><br>
+  <h3 class="js">Welcome to {{ title }}</h3><br>
   <p>Very nice to meet you!</p>
 </div>
 
@@ -11,7 +11,9 @@
   {% for post in page_obj %}
     <div class="col-md-4 mb-4">
       <div class="card h-100">
-        {% if post.image %}
+        {% if post.cover_image %}
+          <img src="{{ post.cover_image.url }}" class="card-img-top" alt="{{ post.title }}" loading="lazy">
+        {% elif post.image %}
           <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}" loading="lazy">
         {% endif %}
         <div class="card-body">
