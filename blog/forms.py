@@ -4,12 +4,13 @@ from .models import Post
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ["title", "content", "category", "tags", "status"]
+        fields = ["title", "content", "category", "tags", "status", "cover_image"]
         widgets = {
             "content": forms.Textarea(attrs={"rows": 8, "class": "form-control"}),
             "title": forms.TextInput(attrs={"class": "form-control"}),
             "category": forms.Select(attrs={"class": "form-select"}),
             "status": forms.Select(attrs={"class": "form-select"}),
+            "cover_image": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
 
     def clean_title(self):

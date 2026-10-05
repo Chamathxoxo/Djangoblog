@@ -3,8 +3,8 @@
 {% block content %}
 <article class="post-article">
 
-  {% if post.image %}
-    <div class="post-hero" style="background-image: url('{{ post.image.url }}');">
+  {% if post.cover_image or post.image %}
+    <div class="post-hero" style="background-image: url('{% if post.cover_image %}{{ post.cover_image.url }}{% else %}{{ post.image.url }}{% endif %}');">
       <div class="post-hero-overlay">
         <span class="post-category-tag">{{ post.category.name|default:"Uncategorized" }}</span>
         <h1 class="post-hero-title">{{ post.title }}</h1>
