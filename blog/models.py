@@ -25,6 +25,7 @@ class Post(models.Model):
 
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
+    cover_image = models.ImageField(upload_to="post_covers/", blank=True, null=True)
     content = models.TextField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="published")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -32,7 +33,6 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="posts")
     tags = models.ManyToManyField(Tag, blank=True, related_name="posts")
     image = models.ImageField(upload_to="post_images/", blank=True, null=True)
-    cover_image = models.ImageField(upload_to="post_covers/", blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -40,13 +40,16 @@ class Post(models.Model):
         super().save(*args, **kwargs)
 
         if self.image:
-            img_path = self.image.path
-            img = Image.open(img_path)
+            img = Image.open(self.image.path)
+            if img.height > 1200 or img.width > 1200:
+                img.thumbnail((1200, 1200))
+                img.save(self.image.path, quality=85, optimize=True)
 
-            max_size = (1200, 1200)
-            if img.height > max_size[1] or img.width > max_size[0]:
-                img.thumbnail(max_size)
-                img.save(img_path, quality=85, optimize=True)
+        if self.cover_image:
+            img = Image.open(self.cover_image.path)
+            if img.height > 800 or img.width > 800:
+                img.thumbnail((800, 800))
+                img.save(self.cover_image.path)
 
     def __str__(self):
         return self.title
