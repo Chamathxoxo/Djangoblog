@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from PIL import Image
-
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -33,6 +33,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="posts")
     tags = models.ManyToManyField(Tag, blank=True, related_name="posts")
     image = models.ImageField(upload_to="post_images/", blank=True, null=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="posts")
 
     def save(self, *args, **kwargs):
         if not self.slug:

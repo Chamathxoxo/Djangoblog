@@ -25,6 +25,7 @@
         <div class="ms-auto d-flex align-items-center gap-2">
             {% if request.user.is_authenticated %}
                 <a class="btn btn-outline-light btn-sm" href="{% url 'post_create' %}">New Post</a>
+                <a class="btn btn-outline-light btn-sm" href="{% url 'my_posts' %}">My Posts</a>
                 <span class="text-white ms-2">Hi, {{ request.user.username }}</span>
                 <button type="button" class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</button>
             {% else %}

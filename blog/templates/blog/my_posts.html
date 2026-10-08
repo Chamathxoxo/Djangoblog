@@ -1,0 +1,25 @@
+{% extends "blog/base.html" %}
+{% block title %}My Posts{% endblock %}
+{% block content %}
+<h1 class="page-title">My Posts</h1>
+<div class="row">
+  {% for post in page_obj %}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100">
+        {% if post.cover_image %}
+          <img src="{{ post.cover_image.url }}" class="card-img-top" alt="{{ post.title }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ post.title }} <span class="badge bg-secondary">{{ post.status }}</span></h5>
+          <p class="card-text">{{ post.content|truncatewords:20 }}</p>
+          <a href="{% url 'post_detail' post.slug %}" class="btn btn-primary btn-sm">View</a>
+          <a href="{% url 'post_edit' post.slug %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+          <a href="{% url 'post_delete' post.slug %}" class="btn btn-outline-danger btn-sm">Delete</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-center">You haven't written any posts yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}
