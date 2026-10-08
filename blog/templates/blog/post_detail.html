@@ -26,9 +26,14 @@
   </div>
 
   <div class="post-actions">
-    <a href="{% url 'post_edit' post.slug %}" class="btn btn-sm btn-outline-secondary">Edit</a>
-    <a href="{% url 'post_delete' post.slug %}" class="btn btn-sm btn-outline-danger">Delete</a>
-    <a href="{% url 'home' %}" class="btn btn-outline-primary">&larr; Back to all posts</a>
+    {% if request.user.is_authenticated %}
+      <a href="{% url 'post_edit' post.slug %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+      <a href="{% url 'post_delete' post.slug %}" class="btn btn-sm btn-outline-danger">Delete</a>
+    {% else %}
+      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#loginRequiredModal" data-message="Please log in to edit this post.">Edit</button>
+      <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#loginRequiredModal" data-message="Please log in to delete this post.">Delete</button>
+    {% endif %}
+    <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary">&larr; Back to all posts</a>
   </div>
 
 </article>

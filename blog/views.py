@@ -4,6 +4,10 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Post, Category
 from .forms import PostForm
+from django.contrib.auth import login
+from django.views.generic.edit import CreateView
+from .forms import PostForm, RegisterForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 HOME_TITLE = "DjangoBlog Homepage"
 
@@ -48,8 +52,18 @@ class CategoryPostListView(ListView):
         context["categories"] = Category.objects.all()
         return context
 
+class RegisterView(CreateView):
+    form_class = RegisterForm
+    template_name = "blog/register.html"
+    success_url = "/"
 
-class PostCreateView(CreateView):
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        login(self.request, self.object)
+        return response
+
+
+class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = "blog/post_form.html"
@@ -58,7 +72,7 @@ class PostCreateView(CreateView):
         return reverse_lazy("post_detail", kwargs={"slug": self.object.slug})
 
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = "blog/post_form.html"
@@ -67,7 +81,7 @@ class PostUpdateView(UpdateView):
         return reverse_lazy("post_detail", kwargs={"slug": self.object.slug})
 
 
-class PostDeleteView(DeleteView):
+class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
     template_name = "blog/post_confirm_delete.html"
     success_url = reverse_lazy("home")
