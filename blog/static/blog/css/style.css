@@ -383,3 +383,59 @@ body {
     -webkit-text-fill-color: transparent;
     color: transparent;
 }
+
+.owner-card {
+  max-width: 420px;
+  margin: 40px auto 0;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.owner-card p {
+  color: #555;
+}
+
+.post-meta {
+  margin-top: 32px; 
+  margin-bottom: 28px;  
+  letter-spacing: 0.3px;
+}
+
+.flash-messages {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    z-index: 1050;
+    pointer-events: none;
+}
+
+.password-wrap {
+    position: relative;
+}
+
+.post-form-card.auth-card .password-wrap input {
+    padding-right: 4.5rem;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-password:hover {
+    color: #3b82f6;
+}

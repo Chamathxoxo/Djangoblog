@@ -1,11 +1,15 @@
+from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db import models
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Post, Category
 from .forms import PostForm, RegisterForm
+from django.http import JsonResponse
+from django.contrib.auth.models import User
 
 HOME_TITLE = "DjangoBlog Homepage"
 
@@ -32,7 +36,12 @@ class PostDetailView(DetailView):
     slug_field = "slug"
 
     def get_queryset(self):
-        return Post.objects.filter(status="published")
+        post = Post.objects.filter(status="published")
+        if self.request.user.is_authenticated:
+            post = Post.objects.filter(
+                models.Q(status="published") | models.Q(author=self.request.user)
+            )
+        return post
 
 
 class CategoryPostListView(ListView):
@@ -59,6 +68,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
+        messages.success(self.request, "Post published successfully!")
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -74,6 +84,10 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         return self.get_object().author == self.request.user
 
+    def form_valid(self, form):
+        messages.success(self.request, "Post updated successfully!")
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse_lazy("post_detail", kwargs={"slug": self.object.slug})
 
@@ -86,6 +100,10 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.get_object().author == self.request.user
+
+    def form_valid(self, form):
+        messages.success(self.request, "Post deleted.")
+        return super().form_valid(form)
 
 
 class MyPostsView(LoginRequiredMixin, ListView):
@@ -109,6 +127,10 @@ class RegisterView(CreateView):
         return response
 
 
+def custom_403(request, exception=None):
+    return render(request, "blog/403.html", status=403)
+
+
 def about(request):
     return render(request, "blog/about.html", {"title": "Us"})
 
@@ -116,5 +138,7 @@ def about(request):
 def contact(request):
     return render(request, "blog/contact.html", {"title": "Us"})
 
-def custom_403(request, exception=None):
-    return render(request, "blog/403.html", status=403)
+def check_username(request):
+    username = request.GET.get("username", "").strip()
+    taken = User.objects.filter(username=username).exists() if username else False
+    return JsonResponse({"taken": taken})

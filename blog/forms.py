@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Post
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
 class PostForm(forms.ModelForm):
@@ -47,3 +48,23 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ["username", "email", "password1", "password2"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-control"
+        self.fields["username"].widget.attrs["maxlength"] = 20
+        self.fields["username"].help_text = "3 to 20 characters. Letters, digits and @/./+/-/_ only."
+
+    def clean_username(self):
+        username = super().clean_username()
+        if len(username) < 3 or len(username) > 20:
+            raise forms.ValidationError("Username must be between 3 and 20 characters.")
+        return username
+
+class LoginForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-control"
+

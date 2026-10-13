@@ -24,7 +24,7 @@
   <div class="post-body">
     <p>{{ post.content }}</p>
   </div>
-  <p class="text-muted text-center">By {{ post.author.username }} on {{ post.created_at|date:"M d, Y" }}</p>
+ <p class="text-muted text-center post-meta">By {{ post.author.username }} on {{ post.created_at|date:"M d, Y" }}</p>
 
   <div class="post-actions">
     {% if request.user.is_authenticated %}
