@@ -2,38 +2,16 @@
 {% block title %}My Posts{% endblock %}
 {% block content %}
 <h1 class="page-title">My Posts</h1>
+
 <div class="row">
   {% for post in page_obj %}
-    <div class="col-md-4 mb-4">
-      <div class="card h-100">
-        {% if post.cover_image %}
-          <img src="{{ post.cover_image.url }}" class="card-img-top" alt="{{ post.title }}">
-        {% endif %}
-        <div class="card-body">
-          <h5 class="card-title">{{ post.title }} <span class="badge bg-secondary">{{ post.status }}</span></h5>
-          <p class="card-text">{{ post.content|truncatewords:20 }}</p>
-          <a href="{% url 'post_detail' post.slug %}" class="btn btn-primary btn-sm">View</a>
-          <a href="{% url 'post_edit' post.slug %}" class="btn btn-outline-secondary btn-sm">Edit</a>
-          <a href="{% url 'post_delete' post.slug %}" class="btn btn-outline-danger btn-sm">Delete</a>
-        </div>
-      </div>
-    </div>
+    {% include "blog/partials/_post_card.html" %}
   {% empty %}
-    <p class="text-center">You haven't written any posts yet.</p>
+    <div class="col-12">
+      <p class="text-center text-muted py-5">You haven't written any posts yet &ndash; <a href="{% url 'post_create' %}">start now!</a></p>
+    </div>
   {% endfor %}
 </div>
 
-{% if page_obj.has_other_pages %}
-<nav class="d-flex justify-content-center mt-4">
-  <ul class="pagination">
-    {% if page_obj.has_previous %}
-      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-    {% endif %}
-    <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
-    {% if page_obj.has_next %}
-      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-    {% endif %}
-  </ul>
-</nav>
-{% endif %}
+{% include "blog/partials/_pagination.html" %}
 {% endblock %}

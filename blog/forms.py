@@ -13,6 +13,7 @@ class PostForm(forms.ModelForm):
             "content": forms.Textarea(attrs={"rows": 8, "class": "form-control"}),
             "title": forms.TextInput(attrs={"class": "form-control"}),
             "category": forms.Select(attrs={"class": "form-select"}),
+            "tags": forms.CheckboxSelectMultiple(attrs={"class": "tag-chips"}),
             "status": forms.Select(attrs={"class": "form-select"}),
             "cover_image": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
