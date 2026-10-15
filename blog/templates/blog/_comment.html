@@ -1,0 +1,80 @@
+<div class="comment{% if is_reply %} comment-reply{% endif %}{% if c.is_pinned %} is-pinned{% endif %}" id="comment-{{ c.id }}" data-thread="{% if c.parent_id %}{{ c.parent_id }}{% else %}{{ c.id }}{% endif %}">
+
+  <div class="comment-avatar">
+    {% if c.author.profile.avatar %}
+      <img src="{{ c.author.profile.avatar.url }}" alt="{{ c.author.username }}">
+    {% else %}
+      <span class="avatar-fallback">{{ c.author.username|first|upper }}</span>
+    {% endif %}
+  </div>
+
+  <div class="comment-main">
+    {% if not c.parent_id %}
+      <div class="pinned-label {% if not c.is_pinned %}d-none{% endif %}">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 3l5 5-2 1-3.5 3.5.5 4.5-2 2-3.5-3.5L5 20l-1-1 5.5-5.5L6 10l2-2 4.5.5L16 5z"/></svg>
+        <span>Pinned by {{ post.author.username }}</span>
+      </div>
+    {% endif %}
+
+    <div class="comment-head">
+      <span class="comment-name">{{ c.author.username }}</span>
+      {% if c.author.profile.is_verified %}
+        <svg class="verified-tick" viewBox="0 0 24 24" width="15" height="15" role="img" aria-label="Verified"><title>Verified</title><circle cx="12" cy="12" r="11" fill="#3b82f6"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      {% endif %}
+      {% if c.is_by_post_author %}<span class="author-badge">Author</span>{% endif %}
+      <span class="comment-time">{{ c.created_at|timesince }} ago</span>
+    </div>
+
+    <div class="comment-text">{{ c.text|linebreaksbr }}</div>
+
+    <div class="comment-actions">
+      {% if request.user.is_authenticated and request.user == post.author %}
+        {# only the post author gets the heart button #}
+        <form method="post" action="{% url 'comment_like' c.id %}" class="like-form">
+          {% csrf_token %}
+          <button type="submit" class="comment-btn heart-btn {% if c.liked_by_post_author %}liked{% endif %}" aria-label="Heart this comment">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </form>
+      {% elif c.liked_by_post_author %}
+        {# everyone else just sees that the author hearted it #}
+        <span class="creator-heart" title="Hearted by the author">
+          <span class="mini-avatar">
+            {% if post.author.profile.avatar %}
+              <img src="{{ post.author.profile.avatar.url }}" alt="{{ post.author.username }}">
+            {% else %}
+              <span class="avatar-fallback">{{ post.author.username|first|upper }}</span>
+            {% endif %}
+          </span>
+          <svg class="heart-badge" viewBox="0 0 24 24" fill="#ef4444" stroke="#fff" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </span>
+      {% endif %}
+
+      {% if request.user.is_authenticated %}
+        <button type="button" class="comment-btn reply-toggle" data-target="reply-form-{{ c.id }}">Reply</button>
+      {% else %}
+        <button type="button" class="comment-btn" data-bs-toggle="modal" data-bs-target="#loginRequiredModal" data-message="Please log in to reply.">Reply</button>
+      {% endif %}
+
+      {% if request.user.is_authenticated and request.user == post.author and not c.parent_id %}
+        <button type="button" class="comment-btn pin-btn" data-url="{% url 'comment_pin' c.id %}">{% if c.is_pinned %}Unpin{% else %}Pin{% endif %}</button>
+      {% endif %}
+
+      {% if request.user == c.author or request.user == post.author %}
+        <button type="button" class="comment-btn danger delete-trigger" data-url="{% url 'comment_delete' c.id %}">Delete</button>
+      {% endif %}
+    </div>
+
+    {% if request.user.is_authenticated %}
+      <form method="post" action="{% url 'comment_add' post.slug %}" class="reply-form d-none" id="reply-form-{{ c.id }}">
+        {% csrf_token %}
+        <input type="hidden" name="parent" value="{{ c.id }}">
+        <textarea name="text" rows="2" maxlength="1000" placeholder="Reply to {{ c.author.username }}…" required></textarea>
+        <div class="comment-form-actions">
+          <button type="button" class="comment-cancel reply-toggle" data-target="reply-form-{{ c.id }}">Cancel</button>
+          <button type="submit" class="comment-submit">Reply</button>
+        </div>
+      </form>
+    {% endif %}
+  </div>
+</div>

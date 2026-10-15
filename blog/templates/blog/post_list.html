@@ -12,7 +12,13 @@
     {% include "blog/partials/_post_card.html" %}
   {% empty %}
     <div class="col-12">
-      <p class="text-center text-muted py-5">No posts yet &ndash; <a href="{% url 'post_create' %}">write the first one!</a></p>
+      <p class="text-center text-muted py-5">
+        {% if request.GET.category %}
+          No posts in "{{ request.GET.category }}" yet &ndash; <a href="{% url 'home' %}">see all posts</a>
+        {% else %}
+          No posts yet &ndash; <a href="{% url 'post_create' %}">write the first one!</a>
+        {% endif %}
+      </p>
     </div>
   {% endfor %}
 </div>
